@@ -1,12 +1,13 @@
 const authentication = require('./authentication');
 
 
-const addBearerHeader = (request, z, bundle) => {
-  if (bundle.authData && bundle.authData.access_token) {
+const includeBearerToken = (request, z, bundle) => {
+  if (bundle.authData.access_token) {
     request.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
   }
   return request;
 };
+
 
 const activityListRequest = {
   url: 'https://api.fitbit.com/1/user/-/activities/list.json?beforeDate=today&sort=desc&limit=10&offset=0'
@@ -23,7 +24,7 @@ const App = {
 
   // beforeRequest & afterResponse are optional hooks into the provided HTTP client
   beforeRequest: [
-    addBearerHeader
+    includeBearerToken
   ],
 
   afterResponse: [],

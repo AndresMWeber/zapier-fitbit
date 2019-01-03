@@ -2,16 +2,16 @@
 const getAccessToken = (z, bundle) => {
   const promise = z.request(`${process.env.BASE_URL_API}/oauth2/token`, {
     method: 'POST',
-    params: {
+    body: {
       code: bundle.inputData.code,
       client_id: process.env.CLIENT_ID,
       client_secret: process.env.CLIENT_SECRET,
       redirect_uri: bundle.inputData.redirect_uri,
       grant_type: 'authorization_code'
     },
-    // headers: {
-    //   'Content-Type': 'application/x-www-form-urlencoded'
-    // }
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded'
+    }
   });
 
   // Needs to return at minimum, `access_token`, and if your app also does refresh, then `refresh_token` too
@@ -22,41 +22,10 @@ const getAccessToken = (z, bundle) => {
 
     const result = JSON.parse(response.content);
     return {
-      access_token: result.access_token,
-      refresh_token: result.refresh_token
+      access_token: result.access_token
     };
   });
 };
-
-// const refreshAccessToken = (z, bundle) => {
-//   const promise = z.request(`${process.env.BASE_URL_API}/oauth/token`, {
-//     method: 'POST',
-//     body: {
-//       refresh_token: bundle.authData.refresh_token,
-//       client_id: process.env.CLIENT_ID,
-//       client_secret: process.env.CLIENT_SECRET,
-//       grant_type: 'refresh_token',
-//       access_token: bundle.authData.refresh_token
-//     },
-//     headers: {
-//       'Content-Type': 'application/x-www-form-urlencoded',
-//       'Authorization': `Bearer ${bundle.authData.access_token}`
-//     }
-//   });
-
-//   // Needs to return `access_token`. If the refresh token stays constant, can skip it. If it changes, can
-//   // return it here to update the user's auth on Zapier.
-//   return promise.then((response) => {
-//     if (response.status !== 200) {
-//       throw new Error('Unable to fetch access token: ' + response.content);
-//     }
-
-//     const result = JSON.parse(response.content);
-//     return {
-//       access_token: result.access_token
-//     };
-//   });
-// };
 
 const testAuth = (z /*, bundle*/) => {
   // Normally you want to make a request to an endpoint that is either specifically designed to test auth, or one that
@@ -78,18 +47,17 @@ const testAuth = (z /*, bundle*/) => {
 
 module.exports = {
   type: 'oauth2',
-  connectionLabel: '{{bundle.authData.username}}',
   oauth2Config: {
     // Step 1 of the OAuth flow; specify where to send the user to authenticate with your API.
     // Zapier generates the state and redirect_uri, you are responsible for providing the rest.
     // Note: can also be a function that returns a string
     authorizeUrl: {
+      url: `${process.env.BASE_URL}/oauth2/authorize`,
       method: 'GET',
-      url: '{{process.env.BASE_URL}}/oauth2/authorize',
       params: {
         client_id: '{{process.env.CLIENT_ID}}',
+        redirect_uri: '{{bundle.inputData.redirect_uri}}',
         state: '{{bundle.inputData.state}}',
-        redirect_uri: '{{process.env.REDIRECT_URI}}',
         response_type: 'code',
         scope: 'activity heartrate location profile',
         expires_in: 604800
@@ -97,19 +65,11 @@ module.exports = {
     },
     // Step 2 of the OAuth flow; Exchange a code for an access token.
     // This could also use the request shorthand.
-    getAccessToken: getAccessToken,
-    // (Optional) If the access token expires after a pre-defined amount of time, you can implement
-    // this method to tell Zapier how to refresh it.
-    // refreshAccessToken: refreshAccessToken,
-    // If you want Zapier to automatically invoke `refreshAccessToken` on a 401 response, set to true
-    // autoRefresh: true,
-    // If there is a specific scope you want to limit your Zapier app to, you can define it here.
-    // Will get passed along to the authorizeUrl
-    scope: 'read'
+    getAccessToken: getAccessToken
   },
   // The test method allows Zapier to verify that the access token is valid. We'll execute this
   // method after the OAuth flow is complete to ensure everything is setup properly.
   test: testAuth,
-  // assuming "username" is a key returned from the test
-  connectionLabel: '{{username}}'
+  // assuming "user" is a key returned from the test
+  connectionLabel: '{{user}}'
 };
