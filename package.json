@@ -1,0 +1,27 @@
+{
+  "name": "zapier-fibit",
+  "version": "1.0.0",
+  "description": "A zapier app that will gather activities from your Fitbit account.",
+  "repository": "zapier/zapier-fitbit",
+  "homepage": "https://zapier.com/",
+  "author": "Andres Weber <andresmweber@gmail.com>",
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --recursive"
+  },
+  "engines": {
+    "node": "8.10.0",
+    "npm": ">=5.6.0"
+  },
+  "dependencies": {
+    "btoa": "^1.2.1",
+    "eslint": "^5.11.1",
+    "node-fetch": "^2.3.0",
+    "zapier-platform-core": "7.6.0"
+  },
+  "devDependencies": {
+    "mocha": "^5.2.0",
+    "should": "^13.2.0"
+  }
+}
