@@ -1,5 +1,6 @@
 
 const getAccessToken = (z, bundle) => {
+  var id_secret_base = Buffer.from(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`).toString("base64")
   const promise = z.request(`${process.env.BASE_URL_API}/oauth2/token`, {
     method: 'POST',
     body: {
@@ -10,7 +11,8 @@ const getAccessToken = (z, bundle) => {
       grant_type: 'authorization_code'
     },
     headers: {
-      'content-type': 'application/x-www-form-urlencoded'
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': `Basic ${id_secret_base}`
     }
   });
 

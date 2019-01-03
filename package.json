@@ -18,6 +18,7 @@
     "btoa": "^1.2.1",
     "eslint": "^5.11.1",
     "node-fetch": "^2.3.0",
+    "passport-fitbit-oauth2": "^1.0.2",
     "zapier-platform-core": "7.6.0"
   },
   "devDependencies": {
