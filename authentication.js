@@ -24,7 +24,8 @@ const getAccessToken = (z, bundle) => {
 
     const result = JSON.parse(response.content);
     return {
-      access_token: result.access_token
+      access_token: result.access_token,
+      refresh_token: result.refresh_token
     };
   });
 };
@@ -43,7 +44,7 @@ const testAuth = (z /*, bundle*/) => {
     if (response.status === 401) {
       throw new Error('The access token you supplied is not valid');
     }
-    return z.JSON.parse(response.content);
+    return response.content;
   });
 };
 
