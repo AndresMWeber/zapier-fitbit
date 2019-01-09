@@ -12,14 +12,9 @@ const listActivities = (z) => {
 
   return responsePromise
     .then(response => {
-      results = z.JSON.parse(response.content)
-      results.id = results.pagination.beforeDate
-      results.activities.map(function (activity) {
-        activity.id = activity.logId
-        delete activity.logId
-        return activity
-      })
-      return results
+      results = z.JSON.parse(response.content);
+      results.activities.forEach(activity => activity.id = activity.logId);
+      return results.activities;
     })
 };
 
@@ -164,7 +159,6 @@ const sample = {
 module.exports = {
   key: 'activity',
   noun: 'Activity',
-
   list: {
     display: {
       label: 'New Activity',
@@ -173,9 +167,29 @@ module.exports = {
     operation: {
       sample: sample,
       outputFields: [
-        { key: 'id', label: 'ID'},
-        { key: 'activities', label: 'Activities' },
-        { key: 'pagination', label: 'Name' }
+        { key: 'id', label: 'ID' },
+        { key: "activeDuration", label: 'Activity Duration' },
+        { key: "activityLevel", label: 'Activity Level' },
+        { key: "activityName", label: 'Activity Name' },
+        { key: "activityTypeId", label: 'Activity Type ID' },
+        { key: "averageHeartRate", label: 'Average Heart Rate' },
+        { key: "calories", label: 'Calories' },
+        { key: "distance", label: 'Distance' },
+        { key: "distanceUnit", label: 'Distance Unit' },
+        { key: "duration", label: 'Duration' },
+        { key: "elevationGain", label: 'Elevation Gain' },
+        { key: "heartRateLink", label: 'Heart Rate Link' },
+        { key: "heartRateZones", label: 'Heart Rate Zones' },
+        { key: "lastModified", label: 'Last Modified' },
+        { key: "logType", label: 'Log Type' },
+        { key: "manualValuesSpecified", label: 'Manual Values' },
+        { key: "originalDuration", label: 'Original Duration' },
+        { key: "originalStartTime", label: 'Original Start Time' },
+        { key: "source", label: 'Source' },
+        { key: "speed", label: 'Speed' },
+        { key: "startTime", label: 'Start Time' },
+        { key: "steps", label: 'Steps' },
+        { key: "tcxLink", label: 'URL' },
       ],
       perform: listActivities
     },
