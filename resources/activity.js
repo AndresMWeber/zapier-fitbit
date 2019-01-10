@@ -14,7 +14,7 @@ const listActivities = (z) => {
     .then(response => {
       results = z.JSON.parse(response.content);
       results.activities.forEach(activity => {activity.id = activity.logId});
-      results.activities.forEach(activity => {activity.activeSeconds = (activity.activeDuration / 1000).toFixed(2)});
+      results.activities.forEach(activity => {activity.activeSeconds = (activity.activeDuration / 1000).toFixed()});
       return results.activities;
     })
 };
@@ -170,7 +170,7 @@ module.exports = {
       outputFields: [
         { key: 'id', label: 'ID' },
         { key: "activeDuration", label: 'Activity Duration' },
-        { key: "activeSeconds", label: 'Duration Active Minutes' },
+        { key: "activeSeconds", label: 'Duration Active Seconds' },
         { key: "activityLevel", label: 'Activity Level' },
         { key: "activityName", label: 'Activity Name' },
         { key: "activityTypeId", label: 'Activity Type ID' },
