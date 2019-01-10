@@ -1,3 +1,37 @@
+const refreshAccessToken = (z, bundle) => {
+  /* Example Post:
+    POST https://api.fitbit.com/oauth2/token
+    Authorization: Basic {{YOUR AUTHORIZATION}}
+    Content-Type: application/x-www-form-urlencoded
+
+    grant_type=refresh_token&refresh_token={{YOUR REFRESH TOKEN}}
+  */
+  const promise = z.request(`${process.env.BASE_URL_API}/oauth/refresh-token`, {
+    method: 'POST',
+    body: {
+      refresh_token: bundle.authData.refresh_token,
+      client_id: process.env.CLIENT_ID,
+      client_secret: process.env.CLIENT_SECRET,
+      grant_type: 'refresh_token'
+    },
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded'
+    }
+  });
+
+  // Needs to return `access_token`. If the refresh token stays constant, can skip it. If it changes, can
+  // return it here to update the user's auth on Zapier.
+  return promise.then((response) => {
+    if (response.status !== 200) {
+      throw new Error('Unable to fetch access token: ' + response.content);
+    }
+
+    const result = JSON.parse(response.content);
+    return {
+      access_token: result.access_token
+    };
+  });
+};
 
 const getAccessToken = (z, bundle) => {
   var id_secret_base = Buffer.from(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`).toString("base64")
@@ -68,7 +102,10 @@ module.exports = {
     },
     // Step 2 of the OAuth flow; Exchange a code for an access token.
     // This could also use the request shorthand.
-    getAccessToken: getAccessToken
+    getAccessToken: getAccessToken,
+    refreshAccessToken: refreshAccessToken,
+    // If you want Zapier to automatically invoke `refreshAccessToken` on a 401 response, set to true
+    autoRefresh: true
   },
   // The test method allows Zapier to verify that the access token is valid. We'll execute this
   // method after the OAuth flow is complete to ensure everything is setup properly.
