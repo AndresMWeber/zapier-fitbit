@@ -13,8 +13,8 @@ const listActivities = (z) => {
   return responsePromise
     .then(response => {
       results = z.JSON.parse(response.content);
-      results.activities.forEach(activity => activity.id = activity.logId);
-      results.activities.forEach(activity => activity.activeMinutes = activity.activeDuration / 1000 / 60);
+      results.activities.forEach(activity => {activity.id = activity.logId});
+      results.activities.forEach(activity => {activity.activeMinutes = (activity.activeDuration / 1000 / 60).toFixed(2)});
       return results.activities;
     })
 };
