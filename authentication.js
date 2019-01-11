@@ -6,7 +6,7 @@ const refreshAccessToken = (z, bundle) => {
 
     grant_type=refresh_token&refresh_token={{YOUR REFRESH TOKEN}}
   */
-  const promise = z.request(`${process.env.BASE_URL_API}/oauth/refresh-token`, {
+  const promise = z.request(`${process.env.BASE_URL_API}/oauth/token`, {
     method: 'POST',
     body: {
       refresh_token: bundle.authData.refresh_token,
