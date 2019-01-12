@@ -1,3 +1,5 @@
+const id_secret_base = Buffer.from(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`).toString("base64")
+
 const refreshAccessToken = (z, bundle) => {
   /* Example Post:
     POST https://api.fitbit.com/oauth2/token
@@ -15,7 +17,8 @@ const refreshAccessToken = (z, bundle) => {
       grant_type: 'refresh_token'
     },
     headers: {
-      'content-type': 'application/x-www-form-urlencoded'
+      'content-type': 'application/x-www-form-urlencoded',
+      'Authorization': `Basic ${id_secret_base}`
     }
   });
 
@@ -35,7 +38,6 @@ const refreshAccessToken = (z, bundle) => {
 };
 
 const getAccessToken = (z, bundle) => {
-  var id_secret_base = Buffer.from(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`).toString("base64")
   const promise = z.request(`${process.env.BASE_URL_API}/oauth2/token`, {
     method: 'POST',
     body: {
