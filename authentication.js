@@ -1,4 +1,32 @@
+const _ = require('underscore');
 const id_secret_base = Buffer.from(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`).toString("base64")
+
+const getAccessToken = (z, bundle) => {
+  const promise = z.request(`${process.env.BASE_URL_API}/oauth2/token`, {
+    method: 'POST',
+    body: {
+      code: bundle.inputData.code,
+      client_id: process.env.CLIENT_ID,
+      client_secret: process.env.CLIENT_SECRET,
+      redirect_uri: bundle.inputData.redirect_uri,
+      grant_type: 'authorization_code'
+    },
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': `Basic ${id_secret_base}`
+    }
+  });
+
+  // Needs to return at minimum, `access_token`, and if your app also does refresh, then `refresh_token` too
+  return promise.then((response) => {
+    if (response.status !== 200) {
+      throw new Error('Unable to fetch access token: ' + response.content);
+    }
+
+    const result = JSON.parse(response.content);
+    return _.pick(result, 'access_token', 'refresh_token');
+  });
+};
 
 const refreshAccessToken = (z, bundle) => {
   /* Example Post:
@@ -30,42 +58,10 @@ const refreshAccessToken = (z, bundle) => {
     }
 
     const result = JSON.parse(response.content);
-    return {
-      access_token: result.access_token,
-      refresh_token: result.refresh_token
-    };
+    return _.pick(result, 'access_token', 'refresh_token');
   });
 };
 
-const getAccessToken = (z, bundle) => {
-  const promise = z.request(`${process.env.BASE_URL_API}/oauth2/token`, {
-    method: 'POST',
-    body: {
-      code: bundle.inputData.code,
-      client_id: process.env.CLIENT_ID,
-      client_secret: process.env.CLIENT_SECRET,
-      redirect_uri: bundle.inputData.redirect_uri,
-      grant_type: 'authorization_code'
-    },
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': `Basic ${id_secret_base}`
-    }
-  });
-
-  // Needs to return at minimum, `access_token`, and if your app also does refresh, then `refresh_token` too
-  return promise.then((response) => {
-    if (response.status !== 200) {
-      throw new Error('Unable to fetch access token: ' + response.content);
-    }
-
-    const result = JSON.parse(response.content);
-    return {
-      access_token: result.access_token,
-      refresh_token: result.refresh_token
-    };
-  });
-};
 
 const testAuth = (z /*, bundle*/) => {
   // Normally you want to make a request to an endpoint that is either specifically designed to test auth, or one that
@@ -108,7 +104,7 @@ module.exports = {
     getAccessToken: getAccessToken,
     refreshAccessToken: refreshAccessToken,
     // If you want Zapier to automatically invoke `refreshAccessToken` on a 401 response, set to true
-    autoRefresh: true
+    autoRefresh: false
   },
   // The test method allows Zapier to verify that the access token is valid. We'll execute this
   // method after the OAuth flow is complete to ensure everything is setup properly.
