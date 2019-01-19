@@ -7,9 +7,9 @@ const getAccessToken = (z, bundle) => {
     body: {
       code: bundle.inputData.code,
       client_id: process.env.CLIENT_ID,
-      client_secret: process.env.CLIENT_SECRET,
       redirect_uri: bundle.inputData.redirect_uri,
-      grant_type: 'authorization_code'
+      grant_type: 'authorization_code',
+      state: bundle.inputData.state
     },
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -36,12 +36,10 @@ const refreshAccessToken = (z, bundle) => {
 
     grant_type=refresh_token&refresh_token={{YOUR REFRESH TOKEN}}
   */
-  const promise = z.request(`${process.env.BASE_URL_API}/oauth/token`, {
+  const promise = z.request(`${process.env.BASE_URL_API}/oauth2/token`, {
     method: 'POST',
     body: {
       refresh_token: bundle.authData.refresh_token,
-      client_id: process.env.CLIENT_ID,
-      client_secret: process.env.CLIENT_SECRET,
       grant_type: 'refresh_token'
     },
     headers: {
@@ -104,7 +102,7 @@ module.exports = {
     getAccessToken: getAccessToken,
     refreshAccessToken: refreshAccessToken,
     // If you want Zapier to automatically invoke `refreshAccessToken` on a 401 response, set to true
-    autoRefresh: false
+    autoRefresh: true
   },
   // The test method allows Zapier to verify that the access token is valid. We'll execute this
   // method after the OAuth flow is complete to ensure everything is setup properly.
