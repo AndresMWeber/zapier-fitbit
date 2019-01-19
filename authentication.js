@@ -1,8 +1,10 @@
 const _ = require('underscore');
-const id_secret_base = Buffer.from(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`).toString("base64")
+const id_secret_base = Buffer.from(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`).toString("base64");
+const token_endpoint = "/oauth2/token";
+const auth_endpoint = "/oauth2/authorize";
 
 const getAccessToken = (z, bundle) => {
-  const promise = z.request(`${process.env.BASE_URL_API}/oauth2/token`, {
+  const promise = z.request(`${process.env.BASE_URL_API}${token_endpoint}`, {
     method: 'POST',
     body: {
       code: bundle.inputData.code,
@@ -36,7 +38,7 @@ const refreshAccessToken = (z, bundle) => {
 
     grant_type=refresh_token&refresh_token={{YOUR REFRESH TOKEN}}
   */
-  const promise = z.request(`${process.env.BASE_URL_API}/oauth2/token`, {
+  const promise = z.request(`${process.env.BASE_URL_API}${token_endpoint}`, {
     method: 'POST',
     body: {
       refresh_token: bundle.authData.refresh_token,
@@ -86,7 +88,7 @@ module.exports = {
     // Zapier generates the state and redirect_uri, you are responsible for providing the rest.
     // Note: can also be a function that returns a string
     authorizeUrl: {
-      url: `${process.env.BASE_URL}/oauth2/authorize`,
+      url: `${process.env.BASE_URL}${auth_endpoint}`,
       method: 'GET',
       params: {
         client_id: '{{process.env.CLIENT_ID}}',
