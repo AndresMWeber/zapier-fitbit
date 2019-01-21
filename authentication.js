@@ -1,4 +1,3 @@
-const _ = require('underscore');
 const id_secret_base = Buffer.from(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`).toString("base64");
 const token_endpoint = "/oauth2/token";
 const auth_endpoint = "/oauth2/authorize";
@@ -26,7 +25,10 @@ const getAccessToken = (z, bundle) => {
     }
 
     const result = JSON.parse(response.content);
-    return _.pick(result, 'access_token', 'refresh_token');
+    return {
+      access_token: result.access_token,
+      refresh_token: result.refresh_token
+    };
   });
 };
 
@@ -58,7 +60,10 @@ const refreshAccessToken = (z, bundle) => {
     }
 
     const result = JSON.parse(response.content);
-    return _.pick(result, 'access_token', 'refresh_token');
+    return {
+      access_token: result.access_token,
+      refresh_token: result.refresh_token
+    };
   });
 };
 
@@ -74,8 +79,8 @@ const testAuth = (z /*, bundle*/) => {
   // This method can return any truthy value to indicate the credentials are valid.
   // Raise an error to show
   return promise.then((response) => {
-    if (response.status === 401) {
-      throw new Error('The access token you supplied is not valid');
+    if (response.status !== 200) {
+      throw new Error('Unable to fetch access token: ' + response.content);
     }
     return response.content;
   });
